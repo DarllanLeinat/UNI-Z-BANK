@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI-Z BANK</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="shortcut icon" href="/static/bank-icone.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <h1>UNI-Z BANK</h1>
+
+        <!-- Tela de Login -->
+        <div id="login-screen" class="screen">
+            <div class="login-content">
+                <img src="/static/logo.png" alt="Imagem de Login" class="login-image">
+                <div class="login-form">
+                    <h2>Login</h2>
+                    <input type="text" id="login-username" class="input-field" placeholder="Usuário" />
+                    <input type="password" id="login-password" class="input-field" placeholder="Senha" />
+                    <button class="button" onclick="login()">Entrar</button>
+                    <p id="login-message" class="message"></p>
+                    <p><a href="javascript:void(0);" onclick="showRegisterScreen()">Cadastrar-se</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Registro -->
+        <div id="register-screen" class="screen hidden">
+            <h2>Cadastrar-se</h2>
+            <input type="text" id="register-username" class="input-field" placeholder="Usuário" />
+            <input type="password" id="register-password" class="input-field" placeholder="Senha" />
+            <input type="text" id="register-rg" class="input-field" placeholder="RG" />
+            <input type="text" id="register-cpf" class="input-field" placeholder="CPF" />
+            <input type="text" id="register-account-number" class="input-field" placeholder="Número da Conta" />
+            <input type="text" id="register-city" class="input-field" placeholder="Cidade" />
+            <input type="text" id="register-phone" class="input-field" placeholder="Telefone" />
+            <input type="date" id="register-dob" class="input-field" placeholder="Data de Nascimento" />
+            <button class="button" onclick="register()">Cadastrar</button>
+            <p id="register-message" class="message"></p>
+            <p><a href="javascript:void(0);" onclick="showLoginScreen()">Já tem uma conta? Faça login</a></p>
+        </div>
+
+        <!-- Tela Principal de Opções (Após login) -->
+        <div id="options-screen" class="screen hidden">
+            <p class="balance">Saldo: R$ <span id="balance">0.00</span></p>
+            <div class="options">
+                <div class="option-button" onclick="showDepositScreen()">Depositar</div>
+                <div class="option-button" onclick="showWithdrawScreen()">Sacar</div>
+                <div class="option-button" onclick="showTransferScreen()">Transferir</div>
+                <div class="option-button" onclick="showTransactionHistory()">Histórico</div>
+                <div class="option-button" onclick="showCreditCard()">Cartão de Crédito</div>
+                <div class="option-button" onclick="gerarExtrato()">Gerar Extrato</div>
+            </div>
+            <button class="button" onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Telas de Funcionalidades -->
+        <div id="deposit-screen" class="screen hidden">
+            <h3>Depósito</h3>
+            <input type="number" id="deposit" class="input-field" placeholder="Valor do depósito" />
+            <button class="button" onclick="depositar()">Depositar</button>
+            <button class="button" onclick="goBackToOptions()">Voltar</button>
+        </div>
+
+        <div id="withdraw-screen" class="screen hidden">
+            <h3>Saque</h3>
+            <input type="number" id="withdraw" class="input-field" placeholder="Valor do saque" />
+            <button class="button" onclick="sacar()">Sacar</button>
+            <button class="button" onclick="goBackToOptions()">Voltar</button>
+        </div>
+
+        <div id="transfer-screen" class="screen hidden">
+            <h3>Transferência</h3>
+            <input type="text" id="transfer-username" class="input-field" placeholder="Usuário destinatário" />
+            <input type="number" id="transfer-amount" class="input-field" placeholder="Valor para transferir" />
+            <button class="button" onclick="transferir()">Transferir</button>
+            <button class="button" onclick="goBackToOptions()">Voltar</button>
+        </div>
+
+        <div id="transaction-history-screen" class="screen hidden">
+            <h3>Histórico de Transações</h3>
+            <ul id="transaction-history"></ul>
+            <button class="button" onclick="goBackToOptions()">Voltar</button>
+        </div>
+
+        <div id="credit-card-screen" class="screen hidden">
+            <h3>Cartão de Crédito</h3>
+            <p>Limite disponível: R$ <span id="credit-limit">1000.00</span></p>
+            
+            <!-- Imagem do cartão de crédito abaixo do limite -->
+            <img src="/static/card-img.png" alt="Imagem do Cartão de Crédito" class="credit-card-image">
+            
+            <button class="button" onclick="pagarFatura()">Pagar Fatura</button>
+            <button class="button" onclick="goBackToOptions()">Voltar</button>
+        </div>
+        
+        
+
+    <script>
+        let currentUser = null;
+        let users = [];
+        let transactions = [];
+
+        // Função de login
+        function login() {
+            const username = document.getElementById("login-username").value;
+            const password = document.getElementById("login-password").value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                document.getElementById("login-message").textContent = "";
+                showOptionsScreen();
+            } else {
+                document.getElementById("login-message").textContent = "Usuário ou senha incorretos.";
+            }
+        }
+
+        // Função de registro
+        function register() {
+            const username = document.getElementById("register-username").value;
+            const password = document.getElementById("register-password").value;
+            const rg = document.getElementById("register-rg").value;
+            const cpf = document.getElementById("register-cpf").value;
+            const accountNumber = document.getElementById("register-account-number").value;
+            const city = document.getElementById("register-city").value;
+            const phone = document.getElementById("register-phone").value;
+            const dob = document.getElementById("register-dob").value;
+
+            // Verificar se o nome de usuário já existe
+            if (users.some(u => u.username === username)) {
+                document.getElementById("register-message").textContent = "Nome de usuário já existe.";
+                return;
+            }
+
+            // Criar novo usuário com informações adicionais
+            const newUser = {
+                username: username,
+                password: password,
+                rg: rg,
+                cpf: cpf,
+                accountNumber: accountNumber,
+                city: city,
+                phone: phone,
+                dob: dob,
+                balance: 0,
+                creditLimit: 1000.00,
+                transactions: []
+            };
+
+            // Adicionar o novo usuário à lista de usuários
+            users.push(newUser);
+
+            // Fazer login automaticamente após o cadastro
+            currentUser = newUser;
+
+            // Limpar mensagem de erro e redirecionar para a tela de opções
+            document.getElementById("register-message").textContent = "";
+            showOptionsScreen();
+        }
+
+        // Função para mostrar a tela de opções após login
+        function showOptionsScreen() {
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("register-screen").classList.add("hidden");
+            document.getElementById("options-screen").classList.remove("hidden");
+
+            updateBalance();
+        }
+
+        // Função para mostrar a tela de login
+        function showLoginScreen() {
+            document.getElementById("login-screen").classList.remove("hidden");
+            document.getElementById("register-screen").classList.add("hidden");
+        }
+
+        function pagarFatura() {
+            alert("Teste de simulação de pagamento de Cartão de Crédito");
+
+        }
+
+        // Função para mostrar a tela de registro
+        function showRegisterScreen() {
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("register-screen").classList.remove("hidden");
+        }
+
+        // Função para mostrar a tela de depósito
+        function showDepositScreen() {
+            document.getElementById("options-screen").classList.add("hidden");
+            document.getElementById("deposit-screen").classList.remove("hidden");
+        }
+
+        // Função para mostrar a tela de saque
+        function showWithdrawScreen() {
+            document.getElementById("options-screen").classList.add("hidden");
+            document.getElementById("withdraw-screen").classList.remove("hidden");
+        }
+
+        // Função para mostrar a tela de transferência
+        function showTransferScreen() {
+            document.getElementById("options-screen").classList.add("hidden");
+            document.getElementById("transfer-screen").classList.remove("hidden");
+        }
+
+        // Função para mostrar o histórico de transações
+        function showTransactionHistory() {
+            document.getElementById("options-screen").classList.add("hidden");
+            document.getElementById("transaction-history-screen").classList.remove("hidden");
+
+            // Exibir histórico de transações
+            const historyList = document.getElementById("transaction-history");
+            historyList.innerHTML = "";
+            currentUser.transactions.forEach(transaction => {
+                const li = document.createElement("li");
+                li.textContent = `${transaction.date} - ${transaction.type} - R$ ${transaction.amount.toFixed(2)}`;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Função para mostrar o cartão de crédito
+        function showCreditCard() {
+            document.getElementById("options-screen").classList.add("hidden");
+            document.getElementById("credit-card-screen").classList.remove("hidden");
+        }
+
+        // Função para realizar um depósito
+        function depositar() {
+            const amount = parseFloat(document.getElementById("deposit").value);
+            if (isNaN(amount) || amount <= 0) {
+                alert("Valor inválido.");
+                return;
+            }
+
+            currentUser.balance += amount;
+            currentUser.transactions.push({
+                date: new Date().toLocaleDateString(),
+                type: "Depósito",
+                amount: amount
+            });
+
+            updateBalance();
+            goBackToOptions();
+        }
+
+        // Função para realizar um saque
+        function sacar() {
+            const amount = parseFloat(document.getElementById("withdraw").value);
+            if (isNaN(amount) || amount <= 0 || amount > currentUser.balance) {
+                alert("Valor inválido ou saldo insuficiente.");
+                return;
+            }
+
+            currentUser.balance -= amount;
+            currentUser.transactions.push({
+                date: new Date().toLocaleDateString(),
+                type: "Saque",
+                amount: amount
+            });
+
+            updateBalance();
+            goBackToOptions();
+        }
+
+        // Função para realizar uma transferência
+        function transferir() {
+            const username = document.getElementById("transfer-username").value;
+            const amount = parseFloat(document.getElementById("transfer-amount").value);
+
+            if (isNaN(amount) || amount <= 0 || amount > currentUser.balance) {
+                alert("Valor inválido ou saldo insuficiente.");
+                return;
+            }
+
+            const recipient = users.find(u => u.username === username);
+            if (!recipient) {
+                alert("Usuário não encontrado.");
+                return;
+            }
+
+            // Realizar a transferência
+            currentUser.balance -= amount;
+            recipient.balance += amount;
+            currentUser.transactions.push({
+                date: new Date().toLocaleDateString(),
+                type: "Transferência enviada",
+                amount: amount
+            });
+            recipient.transactions.push({
+                date: new Date().toLocaleDateString(),
+                type: "Transferência recebida",
+                amount: amount
+            });
+
+            updateBalance();
+            goBackToOptions();
+        }
+
+        // Função para voltar para a tela de opções
+        function goBackToOptions() {
+            document.getElementById("deposit-screen").classList.add("hidden");
+            document.getElementById("withdraw-screen").classList.add("hidden");
+            document.getElementById("transfer-screen").classList.add("hidden");
+            document.getElementById("transaction-history-screen").classList.add("hidden");
+            document.getElementById("credit-card-screen").classList.add("hidden");
+            document.getElementById("options-screen").classList.remove("hidden");
+        }
+
+        // Função para fazer logout
+        function logout() {
+            currentUser = null;
+            document.getElementById("login-screen").classList.remove("hidden");
+            document.getElementById("options-screen").classList.add("hidden");
+        }
+
+        // Função para atualizar o saldo na tela
+        function updateBalance() {
+            document.getElementById("balance").textContent = currentUser.balance.toFixed(2);
+        }
+
+        // Função para gerar o extrato bancário
+        function gerarExtrato() {
+            // Criar o conteúdo do extrato
+            let extrato = "Extrato Bancário:\n\n";
+
+            // Adicionar as transações ao extrato
+            currentUser.transactions.forEach(transaction => {
+                extrato += `${transaction.date} - ${transaction.type} - R$ ${transaction.amount.toFixed(2)}\n`;
+            });
+
+            // Exibir a notificação com o extrato
+            if (Notification.permission === "granted") {
+                new Notification("Extrato Bancário", {
+                    body: extrato,
+                    icon: "/static/logo.png"  // ícone opcional, pode ser um arquivo de imagem no seu diretório estático
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Extrato Bancário", {
+                            body: extrato,
+                            icon: "/static/logo.png"
+                        });
+                    }
+                });
+            }
+
+            // Voltar para a tela de opções
+            goBackToOptions();
+        }
+    </script>
+</body>
+</html>

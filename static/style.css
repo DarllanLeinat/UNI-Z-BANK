@@ -1,0 +1,212 @@
+@charset "utf-8";
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #15386c60;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container Principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+/* Títulos */
+h1, h2, h3 {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Tela de Login e Cadastro */
+.screen {
+    display: none;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.screen:not(.hidden) {
+    display: block;
+}
+
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #2980b9; /* Azul */
+}
+
+/* Campos de Input */
+.input-field {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border 0.3s ease;
+}
+
+.input-field:focus {
+    border: 1px solid #2980b9; /* Azul de foco */
+    outline: none;
+}
+
+/* Botões */
+.button {
+    width: 100%;
+    padding: 14px;
+    background-color: #020288;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #1d6f91; /* Azul mais escuro ao passar o mouse */
+}
+
+.button:active {
+    background-color: #1a5d80; /* Efeito de clique */
+}
+
+/* Links */
+a {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Tela de Opções após Login */
+#options-screen {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.option-button {
+    padding: 20px;
+    background-color: #3498db; /* Azul claro */
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.option-button:hover {
+    background-color: #2980b9; /* Azul mais forte ao passar o mouse */
+}
+
+.option-button:active {
+    background-color: #1d6f91; /* Efeito de clique */
+}
+
+.balance {
+    font-size: 22px;
+    color: #2980b9;
+    margin-bottom: 20px;
+}
+
+/* Mensagens de Erro e Sucesso */
+.message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Botão "Sair" */
+button:last-child {
+    margin-top: 20px;
+    background-color: #e74c3c;
+}
+
+button:last-child:hover {
+    background-color: #c0392b; /* Vermelho mais forte */
+}
+
+button:last-child:active {
+    background-color: #9b2c2c; /* Efeito de clique */
+}
+
+/* Telas de Transações (Depósito, Saque, etc.) */
+.screen {
+    padding: 20px;
+}
+
+.screen h3 {
+    color: #2980b9;
+    margin-bottom: 15px;
+}
+
+/* Design de Campos de Entrada */
+.screen input {
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border 0.3s ease;
+}
+
+.screen input:focus {
+    border-color: #2980b9;
+    outline: none;
+}
+
+/* Transição e Efeitos */
+.option-button, .button {
+    transition: all 0.3s ease;
+}
+
+.login-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-image {
+    width: 40%;
+    margin-right: 20px;
+}
+
+.login-form {
+    width: 60%;
+}
+
+.credit-card-image {
+    display: block;
+    margin-top: 10px;
+    width: 100%; /* Ajuste a largura conforme necessário */
+    max-width: 200px; /* Limite máximo de largura para a imagem */
+}
+
