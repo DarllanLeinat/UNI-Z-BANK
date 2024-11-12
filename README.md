@@ -1,3 +1,1 @@
-[# UNI-Z-BANK](https://uni-z-bank.onrender.com
-
-)
+LINK:https://uni-z-bank.onrender.com
